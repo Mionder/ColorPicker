@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ColorPicker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+        }
+        #btn {
+            border: 1px solid transparent;
+            border-radius: 4px;
+            padding: 8px 20px;
+            font-size: 14px;
+            font-weight: 400;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            height: 100vh;
+            width: 100%;
+            max-width: 300px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        h2 {
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Color Picker</h2>
+    <input id="color_picker" type="color">
+    <button id="btn">Button</button>
+</div>
+<script defer>
+    const colorPicker = document.getElementById('color_picker');
+    const btn = document.getElementById('btn');
+
+    function switchColors() {
+        console.log(colorPicker.value);
+        btn.style.background = colorPicker.value;
+        setTextColor(colorPicker.value);
+    }
+
+    async function setTextColor(color) {
+        const textColor = await analyzeColor(color);
+        console.log(textColor, 'textColor');
+        btn.style.color = textColor;
+        btn.style.border = `1px solid ${textColor}`
+    }
+
+    function analyzeColor(color) {
+        const rgb = hex2rgb(color);
+        let textColor;
+        const isLight = rgb.every((item) => item > 255 / 2);
+        const isFirstMax = rgb[0] > 255 / 2;
+        const isSecondMax = rgb[1] > 255 / 2;
+
+        if (isLight) {
+            textColor = '#000'
+        } else if (!isLight && isFirstMax && !isSecondMax) {
+            textColor = '#fff';
+        } else if (isFirstMax && isSecondMax) {
+            textColor = '#000';
+        }
+        else {
+            textColor = '#fff';
+        }
+        return textColor;
+    }
+
+
+    function hex2rgb(c) {
+        const bigint = parseInt(c.split('#')[1], 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+        return [r, g, b];
+    }
+
+    colorPicker.addEventListener('change', switchColors);
+</script>
+</body>
+</html>
